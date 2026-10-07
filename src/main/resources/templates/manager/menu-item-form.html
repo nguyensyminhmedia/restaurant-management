@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thông tin món ăn</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div class="topbar">
+    <b>Quản lý nhà hàng</b>
+    <span>
+        <a th:href="@{/manager/menu-items}">Món ăn</a>
+        <a th:href="@{/manager/categories}">Danh mục</a>
+        <a th:href="@{/manager/tables}">Bàn</a>
+        <a th:href="@{/}">Trang chủ</a>
+    </span>
+</div>
+<div class="container">
+    <div class="card">
+        <h2 th:text="${form.id == null} ? 'Thêm món mới' : 'Sửa món'"></h2>
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+
+        <form method="post" th:action="@{/manager/menu-items/save}" th:object="${form}">
+            <input type="hidden" th:field="*{id}">
+
+            <label>Tên món</label>
+            <input type="text" th:field="*{name}">
+
+            <label>Danh mục</label>
+            <select th:field="*{categoryId}">
+                <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+            </select>
+
+            <label>Giá (VNĐ)</label>
+            <input type="number" th:field="*{price}" min="1">
+
+            <label>Đường dẫn ảnh (không bắt buộc)</label>
+            <input type="text" th:field="*{imageUrl}">
+
+            <label class="check">
+                <input type="checkbox" th:field="*{available}"> Còn bán
+            </label>
+
+            <div class="actions">
+                <button type="submit" class="btn">Lưu</button>
+                <a class="btn gray" th:href="@{/manager/menu-items}">Hủy</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

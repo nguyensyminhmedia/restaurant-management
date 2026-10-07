@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý bàn</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div class="topbar">
+    <b>Quản lý nhà hàng</b>
+    <span>
+        <a th:href="@{/manager/menu-items}">Món ăn</a>
+        <a th:href="@{/manager/categories}">Danh mục</a>
+        <a th:href="@{/manager/tables}">Bàn</a>
+        <a th:href="@{/}">Trang chủ</a>
+    </span>
+</div>
+<div class="container">
+    <div class="card">
+        <h2>Quản lý bàn</h2>
+        <p class="msg" th:if="${message}" th:text="${message}"></p>
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+
+        <form class="add-form" method="post" th:action="@{/manager/tables/add}">
+            <input type="text" name="name" placeholder="Tên bàn (ví dụ: Bàn 5)" required>
+            <input type="number" name="seats" placeholder="Số chỗ" min="1" required>
+            <button type="submit" class="btn">+ Thêm</button>
+        </form>
+
+        <table>
+            <tr><th>ID</th><th>Tên bàn và số chỗ</th><th>Trạng thái</th><th>Xóa</th></tr>
+            <tr th:each="t : ${tables}">
+                <td th:text="${t.id}"></td>
+                <td>
+                    <form class="row-form" method="post"
+                          th:action="@{/manager/tables/{id}/update(id=${t.id})}">
+                        <input type="text" name="name" th:value="${t.name}" required>
+                        <input type="number" name="seats" th:value="${t.seats}" min="1" required>
+                        <button type="submit" class="btn small gray">Lưu</button>
+                    </form>
+                </td>
+                <td th:text="${t.status}"></td>
+                <td>
+                    <form class="inline" method="post"
+                          th:action="@{/manager/tables/{id}/delete(id=${t.id})}"
+                          onsubmit="return confirm('Xóa bàn này?')">
+                        <button type="submit" class="btn small danger">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

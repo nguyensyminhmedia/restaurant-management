@@ -4,6 +4,7 @@ import com.restaurant.restaurant_app.entity.*;
 import com.restaurant.restaurant_app.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,6 +15,7 @@ public class DataLoader implements CommandLineRunner {
     private final CategoryRepository categoryRepository;
     private final MenuItemRepository menuItemRepository;
     private final RestaurantTableRepository tableRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) {
@@ -21,10 +23,9 @@ public class DataLoader implements CommandLineRunner {
             return;
         }
 
-        // Mat khau tam thoi, se ma hoa o buoc lam dang nhap
-        userRepository.save(new User("admin", "123456", "Nguyễn Quản Lý", Role.MANAGER));
-        userRepository.save(new User("phucvu1", "123456", "Trần Phục Vụ", Role.WAITER));
-        userRepository.save(new User("thungan1", "123456", "Lê Thu Ngân", Role.CASHIER));
+        userRepository.save(new User("admin", passwordEncoder.encode("123456"), "Anh Minh Quản Lý", Role.MANAGER));
+        userRepository.save(new User("bep1", passwordEncoder.encode("123456"), "Nhật Đầu Bếp", Role.KITCHEN));
+        userRepository.save(new User("thungan1", passwordEncoder.encode("123456"), "Quân Thu Ngân", Role.CASHIER));
 
         Category monChinh = categoryRepository.save(new Category("Món chính"));
         Category doUong = categoryRepository.save(new Category("Đồ uống"));

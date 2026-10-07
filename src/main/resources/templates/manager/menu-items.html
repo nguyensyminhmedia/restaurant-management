@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý món ăn</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div class="topbar">
+    <b>Quản lý nhà hàng</b>
+    <span>
+        <a th:href="@{/manager/menu-items}">Món ăn</a>
+        <a th:href="@{/manager/categories}">Danh mục</a>
+        <a th:href="@{/manager/tables}">Bàn</a>
+        <a th:href="@{/}">Trang chủ</a>
+    </span>
+</div>
+<div class="container">
+    <div class="card">
+        <h2>Quản lý món ăn</h2>
+        <a class="btn" th:href="@{/manager/menu-items/new}">+ Thêm món</a>
+
+        <p class="msg" th:if="${message}" th:text="${message}"></p>
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+
+        <table>
+            <tr>
+                <th>ID</th><th>Tên món</th><th>Danh mục</th>
+                <th>Giá (VNĐ)</th><th>Còn bán</th><th>Thao tác</th>
+            </tr>
+            <tr th:each="item : ${items}" th:classappend="${!item.available} ? 'off-row'">
+                <td th:text="${item.id}"></td>
+                <td th:text="${item.name}"></td>
+                <td th:text="${item.category.name}"></td>
+                <td th:text="${#numbers.formatInteger(item.price, 0, 'POINT')}"></td>
+                <td>
+                    <form class="inline" method="post"
+                          th:action="@{/manager/menu-items/{id}/toggle(id=${item.id})}">
+                        <button type="submit" class="toggle"
+                                th:classappend="${item.available} ? 'on'"
+                                th:title="${item.available} ? 'Đang bán, bấm để tắt' : 'Đã hết, bấm để bật'"></button>
+                    </form>
+                </td>
+                <td>
+                    <a class="btn small gray" th:href="@{/manager/menu-items/{id}/edit(id=${item.id})}">Sửa</a>
+                    <form class="inline" method="post"
+                          th:action="@{/manager/menu-items/{id}/delete(id=${item.id})}"
+                          onsubmit="return confirm('Xóa món này?')">
+                        <button type="submit" class="btn small danger">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

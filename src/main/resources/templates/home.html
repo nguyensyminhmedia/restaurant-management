@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Trang chủ</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="box">
+  <h2>Xin chào</h2>
+  <p>Nhân viên: <b th:text="${fullName}">Tên</b></p>
+  <p>Vai trò: <b th:text="${role}">Vai trò</b></p>
+
+  <a class="btn" th:if="${roleName == 'MANAGER'}" th:href="@{/manager/menu-items}">Quản lý món ăn</a>
+  <a class="btn" th:if="${roleName == 'MANAGER'}" th:href="@{/manager/categories}">Quản lý danh mục</a>
+  <a class="btn" th:if="${roleName == 'MANAGER'}" th:href="@{/manager/tables}">Quản lý bàn</a>
+
+  <form th:action="@{/logout}" method="post">
+    <button type="submit">Đăng xuất</button>
+  </form>
+</div>
+</body>
+</html>
