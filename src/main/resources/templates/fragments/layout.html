@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<div th:fragment="sidebar(active)">
+  <div class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">R</div>
+      <div>
+        <div class="brand-name">nhà hàng</div>
+        <div class="brand-sub">Quản lý vận hành</div>
+      </div>
+    </div>
+
+    <div class="nav-label">Không gian làm việc</div>
+    <a class="nav-item" th:classappend="${active == 'dashboard'} ? 'active'"
+       th:href="@{/dashboard}">
+      <span class="nav-icon">&#9632;</span> Tổng quan
+    </a>
+    <a class="nav-item" th:classappend="${active == 'qr'} ? 'active'"
+       th:href="@{/manager/qr}">
+      <span class="nav-icon">&#9654;</span> Gọi món QR
+    </a>
+    <a class="nav-item" th:classappend="${active == 'kitchen'} ? 'active'"
+       th:href="@{/kitchen}" sec:authorize="hasAnyRole('MANAGER', 'KITCHEN')">
+      <span class="nav-icon">&#9872;</span> Khu vực bếp
+    </a>
+    <a class="nav-item" th:classappend="${active == 'cashier'} ? 'active'"
+       th:href="@{/cashier}" sec:authorize="hasAnyRole('MANAGER', 'CASHIER')">
+      <span class="nav-icon">&#36;</span> Thu ngân
+    </a>
+    <a class="nav-item" th:classappend="${active == 'menu'} ? 'active'"
+       th:href="@{/manager/menu-items}" sec:authorize="hasRole('MANAGER')">
+      <span class="nav-icon">&#9776;</span> Quản lý thực đơn
+    </a>
+
+    <div class="nav-label">Hệ thống</div>
+    <a class="nav-item" th:classappend="${active == 'staff'} ? 'active'"
+       th:href="@{/manager/staff}" sec:authorize="hasRole('MANAGER')">
+      <span class="nav-icon">&#9673;</span> Nhân viên
+    </a>
+    <a class="nav-item" th:classappend="${active == 'tables'} ? 'active'"
+       th:href="@{/manager/tables}" sec:authorize="hasRole('MANAGER')">
+      <span class="nav-icon">▦</span> Bàn
+    </a>
+    <a class="nav-item" th:classappend="${active == 'settings'} ? 'active'"
+       th:href="@{/dashboard}">
+      <span class="nav-icon">&#9881;</span> Cài đặt
+    </a>
+
+    <div class="sidebar-footer">
+      <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()" style="margin-bottom:10px">
+        <button class="btn ghost small" type="submit" style="width:100%">Đăng xuất</button>
+      </form>
+      <div class="user-card" sec:authorize="isAuthenticated()">
+        <div class="avatar"
+             th:text="${(fullName != null and fullName.length() > 0) ? fullName.substring(0,1) : 'U'}">U</div>
+        <div>
+          <div class="user-name" th:text="${fullName != null ? fullName : 'Người dùng'}">Minh Nguyễn</div>
+          <div class="user-role" th:text="${roleName != null ? roleName : ''}">Quản lý · Ca trưa</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</html>

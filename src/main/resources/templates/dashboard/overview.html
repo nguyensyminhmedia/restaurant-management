@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Tổng quan vận hành</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+  <div th:replace="~{fragments/layout :: sidebar('dashboard')}"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>Tổng quan vận hành</h1>
+        <div class="sub" th:text="${dateLine}">Thứ Tư, 08/10/2026 · Chi nhánh Quận 1</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <form class="search-box" method="get" th:action="@{/dashboard}">
+        <span>&#9906;</span>
+        <input type="text" name="q" th:value="${q}" placeholder="Tìm món, bàn, hóa đơn...">
+      </form>
+      <a class="icon-btn" th:href="@{/kitchen}"
+         title="Yêu cầu gọi phục vụ" th:if="${isKitchen}">&#128276;<span class="dot" th:if="${alertCount > 0}" th:text="${alertCount}">0</span></a>
+      <button class="icon-btn" onclick="history.back()" title="Trở lại">&#63;</button>
+    </div>
+
+    <div class="content">
+      <div th:if="${searchResults != null}" class="card" style="margin-bottom:20px">
+        <h2>Kết quả tìm</h2>
+        <p class="empty-state" th:if="${#lists.isEmpty(searchResults)}">Không tìm thấy đơn nào khớp.</p>
+        <table th:unless="${#lists.isEmpty(searchResults)}">
+          <tr><th>Mã</th><th>Bàn</th><th>Tổng tiền</th><th>Trạng thái</th></tr>
+          <tr th:each="o : ${searchResults}">
+            <td th:text="${o.code}"></td>
+            <td th:text="${o.table.name}"></td>
+            <td class="money" th:text="${#numbers.formatInteger(o.total, 0, 'POINT')} + 'đ'"></td>
+            <td><span class="pill" th:classappend="${o.status.name().toLowerCase()}" th:text="${o.status}"></span></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="page-head">
+        <div>
+          <h2 class="greeting">Chào buổi trưa, Minh &#128075;</h2>
+          <p class="greeting-sub">Đây là tình hình nhà hàng trong ca làm việc hiện tại.</p>
+        </div>
+        <div class="topbar-spacer"></div>
+        <a class="btn" th:href="@{/manager/orders/new}">+ Tạo đơn mới</a>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="stat-top">
+            <div class="stat-label">Doanh thu hôm nay</div>
+            <div class="stat-icon tint-orange">&#36;</div>
+          </div>
+          <div class="stat-value" th:text="${#numbers.formatInteger(revenueToday, 0, 'POINT')} + 'đ'">0đ</div>
+          <div class="stat-note up" th:if="${revenueToday > 0}">Từ các đơn đã thanh toán hôm nay</div>
+          <div class="stat-note" th:if="${revenueToday == 0}">Chưa có đơn thanh toán hôm nay</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-top">
+            <div class="stat-label">Đơn đang xử lý</div>
+            <div class="stat-icon tint-blue">&#9776;</div>
+          </div>
+          <div class="stat-value" th:text="${openOrderCount}">0</div>
+          <div class="stat-note" th:text="${waitingKitchenCount} + ' đơn đang chờ bếp'">0 đơn đang chờ bếp</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-top">
+            <div class="stat-label">Bàn đang dùng</div>
+            <div class="stat-icon tint-green">&#128421;</div>
+          </div>
+          <div class="stat-value"><span th:text="${tablesInUse}">0</span> <small th:text="'/' + ${tableCount}">/0</small></div>
+          <div class="stat-note warn" th:text="'Tỷ lệ lấp đầy ' + ${occupancy} + '%'">0%</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-top">
+            <div class="stat-label">Khách hài lòng</div>
+            <div class="stat-icon tint-amber">&#9733;</div>
+          </div>
+          <div class="stat-value">4,8 <small>/ 5</small></div>
+          <div class="stat-note">Chưa có dữ liệu đánh giá</div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Đơn hàng gần đây</h2>
+              <p class="card-sub">Cập nhật theo thời gian thực</p>
+            </div>
+            <a class="link" th:href="@{/cashier}" th:if="${isCashier}">Xem tất cả</a>
+          </div>
+          <table>
+            <tr>
+              <th>Mã đơn</th><th>Bàn</th><th>Khách</th><th>Tổng tiền</th><th>Trạng thái</th>
+            </tr>
+            <tr th:each="o : ${recentOrders}">
+              <td class="order-code" th:text="${o.code}">#HD-1001</td>
+              <td th:text="${o.table.name}">Bàn 1</td>
+              <td>
+                <div class="customer">
+                  <span class="avatar" style="width:30px;height:30px;font-size:12px"
+                        th:text="${o.getCustomerDisplay().substring(0,1)}">K</span>
+                  <span>
+                    <div class="customer-name" th:text="${o.getCustomerDisplay()}">Khách lẻ</div>
+                    <div class="customer-sub" th:text="${o.guestCount} + ' người'">2 người</div>
+                  </span>
+                </div>
+              </td>
+              <td class="money" th:text="${#numbers.formatInteger(o.total, 0, 'POINT')} + 'đ'">0đ</td>
+              <td>
+                <span class="pill" th:classappend="${o.status.name().toLowerCase()}" th:text="${o.status}"></span>
+              </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(recentOrders)}">
+              <td colspan="5" class="empty-state">Chưa có đơn nào hôm nay.</td>
+            </tr>
+          </table>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h2>Hoạt động mới nhất</h2>
+                <p class="card-sub" th:text="${shift}">Ca trưa</p>
+              </div>
+            </div>
+            <div class="activity" th:each="a : ${activity}">
+              <div class="activity-icon"
+                   th:classappend="${a.icon == 'check' ? 'tint-green' : (a.icon == 'bell' ? 'tint-amber' : 'tint-blue')}">&#9679;</div>
+              <div>
+                <div class="activity-title" th:text="${a.title}">Bàn 12 đã thanh toán</div>
+                <div class="activity-sub" th:text="${a.sub}">Tiền mặt</div>
+              </div>
+              <div class="activity-time" th:text="${a.ago}">2 phút</div>
+            </div>
+            <p class="empty-state" th:if="${#lists.isEmpty(activity)}">Chưa có hoạt động nào.</p>
+          </div>
+
+          <div class="card" style="margin-top:16px">
+            <div class="card-head">
+              <div>
+                <h2>Mục tiêu doanh thu</h2>
+                <p class="card-sub">Tháng này</p>
+              </div>
+            </div>
+            <div class="legend">
+              <span>Đã đạt <b th:text="${#numbers.formatInteger(revenueToday, 0, 'POINT')} + 'đ'">0đ</b></span>
+            </div>
+            <div class="progress"><span th:style="'width:' + ${occupancy} + '%'"></span></div>
+            <p class="hint">Thanh bar đang hiển thị tỷ lệ lấp đầy bàn — mục tiêu doanh thu sẽ cần bảng cấu hình riêng.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

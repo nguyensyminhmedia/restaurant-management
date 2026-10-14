@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="'Đơn của tôi · ' + ${table.name}">Đơn của tôi</title>
+  <link rel="stylesheet" th:href="@{/css/guest.css}">
+</head>
+<body>
+<div class="app">
+  <div class="g-header">
+    <div>
+      <h1>Đơn của tôi</h1>
+      <small th:text="${table.name}">Bàn 1</small>
+    </div>
+  </div>
+
+  <p class="empty" th:if="${#lists.isEmpty(orders)}">Chưa có đơn hàng nào.</p>
+
+  <div class="order-card" th:each="o : ${orders}">
+    <div class="order-head">
+      <span class="order-code" th:text="${o.code}">HD-1001</span>
+      <span class="pill-status" th:classappend="${o.status.name().toLowerCase()}"
+            th:text="${o.status.name() == 'PENDING' ? 'Chờ bếp' :
+                       o.status.name() == 'COOKING' ? 'Đang nấu' :
+                       o.status.name() == 'READY'   ? 'Sẵn sàng' :
+                       o.status.name() == 'SERVED'  ? 'Đã phục vụ' : 'Đã thanh toán'}"></span>
+    </div>
+    <div class="order-time" th:text="${#temporals.format(o.createdAt, 'HH:mm dd/MM')}">12:30 14/10</div>
+    <div class="order-line" th:each="i : ${o.items}">
+      <span th:text="${i.menuItem.name} + ' × ' + ${i.quantity}">Món × 1</span>
+      <span th:text="${#numbers.formatInteger(i.subtotal, 0, 'POINT')} + 'đ'">0đ</span>
+    </div>
+    <div class="order-total">
+      <span>Tổng</span>
+      <span th:text="${#numbers.formatInteger(o.total, 0, 'POINT')} + 'đ'">0đ</span>
+    </div>
+  </div>
+
+  <div th:replace="~{guest/tabbar :: tabbar('orders', ${table.id}, ${cartCount})}"></div>
+</div>
+</body>
+</html>

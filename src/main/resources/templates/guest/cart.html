@@ -3,24 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Giỏ hàng</title>
+  <title th:text="'Giỏ hàng · ' + ${table.name}">Giỏ hàng</title>
   <link rel="stylesheet" th:href="@{/css/guest.css}">
 </head>
 <body>
-<div class="wrap">
-  <div class="header">
-    <h1>Giỏ hàng</h1>
-    <small th:text="${table.name} + ' · ' + ${table.seats} + ' chỗ'">Bàn</small>
+<div class="app">
+  <div class="g-header">
+    <div>
+      <h1>Giỏ hàng</h1>
+      <small th:text="${table.name}">Bàn 1</small>
+    </div>
+    <span class="table-tag" th:text="${cartCount} + ' món'">0 món</span>
   </div>
 
-  <a class="back" th:href="@{/t/{id}(id=${table.id})}">← Quay lại thực đơn</a>
+  <div class="steps">
+    <span class="step-chip done">1. Chọn món</span>
+    <span class="step-chip active">2. Xác nhận</span>
+    <span class="step-chip">3. Gửi bếp</span>
+  </div>
 
-  <p class="error" th:if="${error}" th:text="${error}"></p>
+  <div class="g-error" th:if="${error}" th:text="${error}"></div>
 
-  <div class="item" th:each="line : ${cart}">
+  <div class="cart-item" th:each="line : ${cart}">
     <div>
       <div class="name" th:text="${line.name}">Tên món</div>
-      <div class="cat" th:text="${#numbers.formatInteger(line.price, 0, 'POINT')} + 'đ × ' + ${line.quantity}">0đ</div>
+      <div class="sub" th:text="${#numbers.formatInteger(line.price, 0, 'POINT')} + 'đ × ' + ${line.quantity}">0đ</div>
     </div>
     <div class="qty">
       <form method="post" th:action="@{/t/{id}/cart/quantity(id=${table.id})}">
@@ -43,13 +50,15 @@
 
   <p class="empty" th:if="${cart.isEmpty()}">Giỏ hàng đang trống.</p>
 
-  <div class="cart-footer" th:if="${!cart.isEmpty()}">
+  <div class="cart-summary" th:if="${!cart.isEmpty()}">
     <div class="total">Tổng cộng: <b th:text="${#numbers.formatInteger(cartTotal, 0, 'POINT')} + 'đ'">0đ</b></div>
     <form method="post" th:action="@{/t/{id}/cart/submit(id=${table.id})}">
       <textarea name="note" placeholder="Ghi chú (không bắt buộc, ví dụ: ít cay, nhiều đá...)" rows="2"></textarea>
-      <button type="submit" class="send">Gửi bếp</button>
+      <button type="submit" class="btn-send">Gửi bếp</button>
     </form>
   </div>
+
+  <div th:replace="~{guest/tabbar :: tabbar('cart', ${table.id}, ${cartCount})}"></div>
 </div>
 </body>
 </html>

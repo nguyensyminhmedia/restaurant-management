@@ -1,63 +1,107 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Màn hình bếp</title>
-    <link rel="stylesheet" th:href="@{/css/admin.css}">
+  <meta charset="UTF-8">
+  <title>Khu vực bếp</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
-<div class="topbar">
-    <b>Màn hình bếp</b>
-    <span>
-        <a th:href="@{/kitchen}">Đơn đang làm</a>
-        <a th:href="@{/}">Trang chủ</a>
-    </span>
-</div>
-<div class="container">
-    <p class="msg" th:if="${message}" th:text="${message}"></p>
+<div class="layout">
+  <div th:replace="~{fragments/layout :: sidebar('kitchen')}"></div>
 
-    <p th:if="${orders.isEmpty()}" class="card">Hiện không có đơn nào cần làm.</p>
-
-    <div class="order-grid">
-        <div class="card order-card" th:each="o : ${orders}">
-            <div class="order-head">
-                <b th:text="${o.table.name}">Bàn</b>
-                <span class="pill" th:text="${o.status}">PENDING</span>
-            </div>
-            <div class="order-time" th:text="${#temporals.format(o.createdAt, 'HH:mm dd/MM')}">giờ</div>
-            <p class="note" th:if="${o.note}" th:text="'Ghi chú: ' + ${o.note}"></p>
-
-            <div class="order-items">
-                <form th:each="i : ${o.items}" class="inline"
-                      method="post"
-                      th:action="@{/kitchen/orders/{oid}/items/{iid}/toggle(oid=${o.id}, iid=${i.id})}">
-                    <button type="submit" class="item-line" th:classappend="${i.done} ? 'done'">
-                        <span class="tick" th:text="${i.done} ? '✓' : '○'"></span>
-                        <span th:text="${i.menuItem.name}">Món</span>
-                        <b th:text="'×' + ${i.quantity}">×1</b>
-                    </button>
-                </form>
-            </div>
-
-            <div class="order-actions">
-                <form class="inline" method="post"
-                      th:action="@{/kitchen/orders/{id}/status(id=${o.id})}">
-                    <input type="hidden" name="status" value="COOKING">
-                    <button type="submit" class="btn small">Bắt đầu làm</button>
-                </form>
-                <form class="inline" method="post"
-                      th:action="@{/kitchen/orders/{id}/status(id=${o.id})}">
-                    <input type="hidden" name="status" value="READY">
-                    <button type="submit" class="btn small gray">Xong hết</button>
-                </form>
-                <form class="inline" method="post"
-                      th:action="@{/kitchen/orders/{id}/status(id=${o.id})}">
-                    <input type="hidden" name="status" value="SERVED">
-                    <button type="submit" class="btn small gray">Đã phục vụ</button>
-                </form>
-            </div>
-        </div>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>Khu vực bếp</h1>
+        <div class="sub">Các đơn đang chờ bếp xử lý</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <button class="icon-btn" onclick="location.reload()" title="Tải lại">&#8635;</button>
     </div>
+
+    <div class="content">
+      <div th:if="${message}" class="msg" th:text="${message}"></div>
+
+      <div class="card" th:if="${openRequests != null and !openRequests.isEmpty()}">
+        <h2>Gọi phục vụ</h2>
+        <table>
+          <tr><th>Bàn</th><th>Yêu cầu</th><th>Thời gian</th><th>Thao tác</th></tr>
+          <tr th:each="r : ${openRequests}">
+            <td th:text="${r.table.name}">Bàn 1</td>
+            <td th:text="${r.message}"></td>
+            <td th:text="${#temporals.format(r.createdAt, 'HH:mm')}"></td>
+            <td>
+              <form class="inline" method="post"
+                    th:action="@{/kitchen/requests/{id}/resolve(id=${r.id})}">
+                <button type="submit" class="btn small gray">Đã xử lý</button>
+              </form>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="stat-grid" style="margin-top:4px">
+        <div class="stat">
+          <div class="stat-label">Tổng đơn đang làm</div>
+          <div class="stat-value" th:text="${orders != null ? #lists.size(orders) : 0}">0</div>
+        </div>
+      </div>
+
+      <div class="dash-grid" style="margin-top:4px">
+        <div class="card">
+          <div class="card-head">
+            <div><h2>Đơn cần làm</h2><p class="card-sub">Sắp xếp theo thời gian khách gọi</p></div>
+          </div>
+          <p class="empty-state" th:if="${orders.isEmpty()}">Không có đơn nào đang chờ bếp.</p>
+          <div class="order-grid" style="display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">
+            <div class="card" th:each="o : ${orders}" style="box-shadow:none;background:#fbf9f7">
+              <div class="card-head" style="margin-bottom:8px">
+                <div class="order-code" th:text="${o.code} + ' · ' + ${o.table.name}">#HD-1001 · Bàn 1</div>
+                <span class="pill" th:classappend="${o.status.name().toLowerCase()}" th:text="${o.status}"></span>
+              </div>
+              <div class="hint" th:text="${#temporals.format(o.createdAt, 'HH:mm')} + ' · ' + ${o.customerDisplay}"></div>
+              <p class="hint" th:if="${o.note}" th:text="'Ghi chú: ' + ${o.note}" style="color:var(--amber)"></p>
+
+              <div style="margin:10px 0">
+                <form th:each="i : ${o.items}" method="post" style="display:block;margin-bottom:4px"
+                      th:action="@{/kitchen/orders/{oid}/items/{iid}/toggle(oid=${o.id}, iid=${i.id})}">
+                  <button type="submit" class="item-line"
+                          th:style="'width:100%;display:flex;gap:8px;padding:8px;margin:0;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;' + (${i.done} ? 'background:#e6f5ec;border-color:#cfe6d2;text-decoration:line-through;color:#7a8a7c;' : '')">
+                    <span th:text="${i.done} ? '✓' : '○'"></span>
+                    <span th:text="${i.menuItem.name}"></span>
+                    <b style="margin-left:auto" th:text="'×' + ${i.quantity}"></b>
+                  </button>
+                </form>
+              </div>
+
+              <div class="actions" style="margin-top:8px;flex-wrap:wrap;gap:6px">
+                <form class="inline" method="post" th:action="@{/kitchen/orders/{id}/status(id=${o.id})}">
+                  <input type="hidden" name="status" value="COOKING">
+                  <button type="submit" class="btn small">Bắt đầu làm</button>
+                </form>
+                <form class="inline" method="post" th:action="@{/kitchen/orders/{id}/status(id=${o.id})}">
+                  <input type="hidden" name="status" value="READY">
+                  <button type="submit" class="btn small gray">Xong hết</button>
+                </form>
+                <form class="inline" method="post" th:action="@{/kitchen/orders/{id}/status(id=${o.id})}">
+                  <input type="hidden" name="status" value="SERVED">
+                  <button type="submit" class="btn small gray">Đã phục vụ</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <h2>Hướng dẫn nhanh</h2>
+            <p class="hint">Bấm vào từng món để đánh dấu đã hoàn thành. Khi tất cả món xong, đơn sẽ tự chuyển sang <b>Xong hết</b>.</p>
+            <p class="hint">Sau khi món lên bàn, bấm <b>Đã phục vụ</b> để báo thu ngân có thể tính tiền.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 </body>
 </html>

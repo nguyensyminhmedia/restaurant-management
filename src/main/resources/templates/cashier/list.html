@@ -1,64 +1,78 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Thu ngân</title>
-    <link rel="stylesheet" th:href="@{/css/admin.css}">
+  <meta charset="UTF-8">
+  <title>Thu ngân</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
-<div class="topbar">
-    <b>Thu ngân</b>
-    <span>
-        <a th:href="@{/cashier}">Đơn chờ thanh toán</a>
-        <a th:href="@{/}">Trang chủ</a>
-    </span>
-</div>
-<div class="container">
-    <p class="msg" th:if="${message}" th:text="${message}"></p>
+<div class="layout">
+  <div th:replace="~{fragments/layout :: sidebar('cashier')}"></div>
 
-    <div class="card">
-        <h2>Đơn chờ thanh toán</h2>
-        <table>
-            <tr>
-                <th>Đơn</th><th>Bàn</th><th>Món</th><th>Trạng thái</th>
-                <th>Tổng tiền</th><th>Thao tác</th>
-            </tr>
-            <tr th:each="o : ${orders}">
-                <td th:text="'#' + ${o.id}"></td>
-                <td th:text="${o.table.name}"></td>
-                <td>
-                    <div th:each="i : ${o.items}">
-                        <span th:text="${i.menuItem.name} + ' ×' + ${i.quantity}"></span>
-                    </div>
-                </td>
-                <td th:text="${o.status}"></td>
-                <td class="money" th:text="${#numbers.formatInteger(o.total, 0, 'POINT')} + 'đ'">0đ</td>
-                <td>
-                    <a class="btn small gray" th:href="@{/cashier/orders/{id}(id=${o.id})}">Chi tiết</a>
-                    <form class="inline" method="post"
-                          th:action="@{/cashier/orders/{id}/pay(id=${o.id})}"
-                          onsubmit="return confirm('Xác nhận đã thu tiền?')">
-                        <button type="submit" class="btn small">Thanh toán</button>
-                    </form>
-                </td>
-            </tr>
-            <tr th:if="${orders.isEmpty()}">
-                <td colspan="6">Chưa có đơn nào chờ thanh toán.</td>
-            </tr>
-        </table>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>Thu ngân</h1>
+        <div class="sub">Đơn chờ thanh toán &amp; tình trạng bàn</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <button class="icon-btn" onclick="location.reload()" title="Tải lại">&#8635;</button>
     </div>
 
-    <div class="card" style="margin-top:16px">
-        <h2>Tình trạng bàn</h2>
+    <div class="content">
+      <div th:if="${message}" class="msg" th:text="${message}"></div>
+
+      <div class="card" style="margin-bottom:18px">
+        <div class="card-head">
+          <div><h2>Đơn chờ thanh toán</h2><p class="card-sub" th:text="'Tổng ' + ${#lists.size(orders)} + ' đơn đang mở'"></p></div>
+        </div>
         <table>
-            <tr><th>Bàn</th><th>Số chỗ</th><th>Trạng thái</th></tr>
-            <tr th:each="t : ${tables}">
-                <td th:text="${t.name}"></td>
-                <td th:text="${t.seats}"></td>
-                <td th:text="${t.status}"></td>
-            </tr>
+          <tr>
+            <th>Mã đơn</th><th>Bàn</th><th>Khách</th><th>Món</th><th>Tổng tiền</th><th>Thao tác</th>
+          </tr>
+          <tr th:each="o : ${orders}">
+            <td class="order-code" th:text="${o.code}"></td>
+            <td th:text="${o.table.name}"></td>
+            <td th:text="${o.customerDisplay}"></td>
+            <td>
+              <span th:each="i, it : ${o.items}" th:if="${it.index < 3}"
+                    th:text="${i.menuItem.name} + ' ×' + ${i.quantity} + (${it.last} ? '' : ', ')"></span>
+              <span th:if="${#lists.size(o.items) > 3}" th:text="'+' + (${#lists.size(o.items) - 3}) + ' món khác'"></span>
+            </td>
+            <td class="money" th:text="${#numbers.formatInteger(o.total, 0, 'POINT')} + 'đ'"></td>
+            <td>
+              <a class="btn small gray" th:href="@{/cashier/orders/{id}(id=${o.id})}">Chi tiết</a>
+              <form class="inline" method="post" th:action="@{/cashier/orders/{id}/pay(id=${o.id})}"
+                    onsubmit="return confirm('Xác nhận đã thu tiền?')">
+                <button type="submit" class="btn small">Thanh toán</button>
+              </form>
+            </td>
+          </tr>
+          <tr th:if="${orders.isEmpty()}">
+            <td colspan="6" class="empty-state">Chưa có đơn nào chờ thanh toán.</td>
+          </tr>
         </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div><h2>Tình trạng bàn</h2><p class="card-sub">Bàn trống sẽ sẵn sàng phục vụ khách mới</p></div>
+        </div>
+        <table>
+          <tr><th>Bàn</th><th>Số chỗ</th><th>Khu vực</th><th>Trạng thái</th><th>Trang khách</th></tr>
+          <tr th:each="t : ${tables}">
+            <td th:text="${t.name}"></td>
+            <td th:text="${t.seats}"></td>
+            <td th:text="${t.location != null ? t.location : '—'}"></td>
+            <td><span class="pill" th:classappend="${t.status.name().toLowerCase()}" th:text="${t.status}"></span></td>
+            <td>
+              <a class="btn small ghost" th:href="@{/t/{id}(id=${t.id})}" target="_blank">Mở</a>
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
+  </div>
 </div>
 </body>
 </html>

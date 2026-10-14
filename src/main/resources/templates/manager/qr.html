@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Mã QR gọi món</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+  <div th:replace="~{fragments/layout :: sidebar('qr')}"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>Mã QR gọi món</h1>
+        <div class="sub">In mã QR và đặt lên từng bàn để khách tự gọi món</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <button class="btn" onclick="window.print()">In tất cả</button>
+    </div>
+
+    <div class="content">
+      <p class="hint" th:if="${#lists.isEmpty(tables)}">Chưa có bàn nào. <a th:href="@{/manager/tables}">Thêm bàn</a></p>
+
+      <div style="display:flex;flex-wrap:wrap;gap:20px">
+        <div class="card" th:each="t : ${tables}" style="width:260px;text-align:center;padding:20px">
+          <img th:src="@{/manager/qr/image/{id}(id=${t.id})}" alt="QR" style="width:200px;height:200px">
+          <h3 style="margin:10px 0 4px" th:text="${t.name}">Bàn 1</h3>
+          <p class="card-sub" th:text="${t.seats} + ' chỗ ngồi'">4 chỗ</p>
+          <p style="font-size:12px;color:var(--muted);word-break:break-all"
+             th:text="${baseUrl} + '/t/' + ${t.id} + '/welcome'"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+@media print {
+  .sidebar, .topbar { display: none !important; }
+  .main { margin: 0 !important; }
+  .content { padding: 0 !important; }
+  .card { break-inside: avoid; box-shadow: none !important; border: 1px solid #ccc; }
+}
+</style>
+</body>
+</html>

@@ -26,12 +26,15 @@ public class ManagerTableController {
 
     @PostMapping("/add")
     public String add(@RequestParam String name, @RequestParam int seats,
+                      @RequestParam(required = false) String location,
                       RedirectAttributes redirect) {
         String error = validate(name, seats);
         if (error != null) {
             redirect.addFlashAttribute("error", error);
         } else {
-            tableRepository.save(new RestaurantTable(name.trim(), seats));
+            RestaurantTable t = new RestaurantTable(name.trim(), seats);
+            t.setLocation(location == null ? null : location.trim());
+            tableRepository.save(t);
             redirect.addFlashAttribute("message", "Đã thêm: " + name.trim());
         }
         return "redirect:/manager/tables";
@@ -39,7 +42,9 @@ public class ManagerTableController {
 
     @PostMapping("/{id}/update")
     public String update(@PathVariable Long id, @RequestParam String name,
-                         @RequestParam int seats, RedirectAttributes redirect) {
+                         @RequestParam int seats,
+                         @RequestParam(required = false) String location,
+                         RedirectAttributes redirect) {
         String error = validate(name, seats);
         if (error != null) {
             redirect.addFlashAttribute("error", error);
@@ -47,6 +52,7 @@ public class ManagerTableController {
             RestaurantTable table = tableRepository.findById(id).orElseThrow();
             table.setName(name.trim());
             table.setSeats(seats);
+            table.setLocation(location == null ? null : location.trim());
             tableRepository.save(table);
             redirect.addFlashAttribute("message", "Đã cập nhật bàn.");
         }

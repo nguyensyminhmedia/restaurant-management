@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="'Gọi phục vụ · ' + ${table.name}">Gọi phục vụ</title>
+  <link rel="stylesheet" th:href="@{/css/guest.css}">
+</head>
+<body>
+<div class="app">
+  <div class="g-header">
+    <div>
+      <h1>Gọi phục vụ</h1>
+      <small th:text="${table.name}">Bàn 1</small>
+    </div>
+  </div>
+
+  <div class="g-ok" th:if="${success}" th:text="${success}"></div>
+  <div class="g-error" th:if="${error}" th:text="${error}"></div>
+
+  <div class="service-page">
+    <h2>Bạn cần hỗ trợ gì?</h2>
+    <p>Chọn một trong các yêu cầu bên dưới hoặc nhập nội dung riêng.</p>
+
+    <div class="service-options">
+      <form method="post" th:action="@{/t/{id}/service(id=${table.id})}">
+        <input type="hidden" name="message" value="Xin gọi nhân viên đến bàn">
+        <button type="submit" class="svc-option">
+          <span class="svc-icon">🙋</span>
+          <span>Gọi nhân viên đến bàn</span>
+        </button>
+      </form>
+      <form method="post" th:action="@{/t/{id}/service(id=${table.id})}">
+        <input type="hidden" name="message" value="Xin thêm nước/đá/khăn">
+        <button type="submit" class="svc-option">
+          <span class="svc-icon">🧊</span>
+          <span>Xin thêm nước / đá / khăn</span>
+        </button>
+      </form>
+      <form method="post" th:action="@{/t/{id}/service(id=${table.id})}">
+        <input type="hidden" name="message" value="Xin hóa đơn thanh toán">
+        <button type="submit" class="svc-option">
+          <span class="svc-icon">🧾</span>
+          <span>Xin hóa đơn thanh toán</span>
+        </button>
+      </form>
+    </div>
+
+    <form class="svc-form" method="post" th:action="@{/t/{id}/service(id=${table.id})}">
+      <textarea name="message" placeholder="Hoặc nhập yêu cầu riêng..." rows="3" required></textarea>
+      <button type="submit" class="btn-send">Gửi yêu cầu</button>
+    </form>
+  </div>
+
+  <div th:replace="~{guest/tabbar :: tabbar('service', ${table.id}, ${cartCount})}"></div>
+</div>
+</body>
+</html>

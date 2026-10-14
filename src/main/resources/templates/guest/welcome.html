@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="'Chào mừng · ' + ${table.name}">Chào mừng</title>
+  <link rel="stylesheet" th:href="@{/css/guest.css}">
+</head>
+<body>
+<div class="app">
+  <div class="g-header">
+    <div>
+      <h1>Nhà hàng</h1>
+      <small>Chào mừng quý khách</small>
+    </div>
+  </div>
+
+  <div class="welcome">
+    <div class="welcome-icon">🍽️</div>
+    <h2>Chào mừng quý khách!</h2>
+    <p>Quý khách đang ngồi tại</p>
+    <div class="table-name" th:text="${table.name}">Bàn 1</div>
+    <div class="table-seats" th:text="${table.seats} + ' chỗ ngồi'">4 chỗ ngồi</div>
+    <a class="btn-start" th:href="@{/t/{id}(id=${table.id})}">Xem thực đơn</a>
+  </div>
+</div>
+</body>
+</html>

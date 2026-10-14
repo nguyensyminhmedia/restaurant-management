@@ -4,6 +4,7 @@ import com.restaurant.restaurant_app.entity.Order;
 import com.restaurant.restaurant_app.entity.OrderItem;
 import com.restaurant.restaurant_app.entity.OrderStatus;
 import com.restaurant.restaurant_app.repository.OrderRepository;
+import com.restaurant.restaurant_app.repository.ServiceRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,11 +22,22 @@ public class KitchenController {
             OrderStatus.PENDING, OrderStatus.COOKING, OrderStatus.READY, OrderStatus.SERVED);
 
     private final OrderRepository orderRepository;
+    private final ServiceRequestRepository serviceRequestRepository;
 
     @GetMapping
     public String board(Model model) {
         model.addAttribute("orders", orderRepository.findByStatusInOrderByCreatedAtAsc(ACTIVE));
+        model.addAttribute("openRequests", serviceRequestRepository.findByResolvedFalseOrderByCreatedAtDesc());
         return "kitchen/board";
+    }
+
+    @PostMapping("/requests/{id}/resolve")
+    public String resolveRequest(@PathVariable Long id, RedirectAttributes redirect) {
+        serviceRequestRepository.findById(id).ifPresent(r -> {
+            r.setResolved(true);
+            serviceRequestRepository.save(r);
+        });
+        return "redirect:/kitchen";
     }
 
     @PostMapping("/orders/{orderId}/items/{itemId}/toggle")

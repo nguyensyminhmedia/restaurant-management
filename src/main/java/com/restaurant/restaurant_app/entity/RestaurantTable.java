@@ -21,11 +21,20 @@ public class RestaurantTable {
 
     private int seats;
 
+    private String location;
+
     @Enumerated(EnumType.STRING)
     private TableStatus status = TableStatus.EMPTY;
 
     public RestaurantTable(String name, int seats) {
         this.name = name;
         this.seats = seats;
+    }
+
+    @Transient
+    public String getDisplayName() {
+        String compact = name.replaceAll("\\s+", "");
+        String prefix = compact.startsWith("Ban") ? compact : ("Bàn " + compact);
+        return prefix;
     }
 }

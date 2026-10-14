@@ -3,19 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Thực đơn</title>
+  <title th:text="'Thực đơn · ' + ${table.name}">Thực đơn</title>
   <link rel="stylesheet" th:href="@{/css/guest.css}">
 </head>
 <body>
-<div class="wrap">
-  <div class="header">
-    <h1>Thực đơn</h1>
-    <small th:text="${table.name} + ' · ' + ${table.seats} + ' chỗ'">Bàn</small>
+<div class="app">
+  <div class="g-header">
+    <div>
+      <h1>Thực đơn</h1>
+      <small th:text="${table.name}">Bàn 1</small>
+    </div>
+    <span class="table-tag" th:text="${table.seats} + ' chỗ'">4 chỗ</span>
   </div>
 
-  <p class="ok" th:if="${param.sent}" th:text="'Đã gửi món #' + ${param.sent} + ' xuống bếp. Chúc bạn dùng bữa ngon!'">Đã gửi bếp.</p>
+  <div class="steps">
+    <span class="step-chip active">1. Chọn món</span>
+    <span class="step-chip">2. Xác nhận</span>
+    <span class="step-chip">3. Gửi bếp</span>
+  </div>
 
-  <form class="search" method="get" th:action="@{/t/{id}(id=${table.id})}">
+  <div class="g-ok" th:if="${param.sent}" th:text="'Đã gửi đơn #' + ${param.sent} + ' xuống bếp!'"></div>
+
+  <form class="g-search" method="get" th:action="@{/t/{id}(id=${table.id})}">
     <input type="hidden" name="categoryId" th:if="${selectedCategoryId != null}"
            th:value="${selectedCategoryId}">
     <input type="text" name="q" th:value="${q}" placeholder="Tìm món...">
@@ -31,29 +40,23 @@
        th:text="${c.name}">Danh mục</a>
   </div>
 
-  <div class="item" th:each="item : ${items}">
+  <div class="g-item" th:each="item : ${items}">
     <div>
       <div class="name" th:text="${item.name}">Tên món</div>
       <div class="cat" th:text="${item.category.name}">Danh mục</div>
     </div>
-    <div class="item-right">
+    <div class="g-item-right">
       <div class="price" th:text="${#numbers.formatInteger(item.price, 0, 'POINT')} + 'đ'">0đ</div>
       <form method="post" th:action="@{/t/{id}/cart/add(id=${table.id})}">
         <input type="hidden" name="menuItemId" th:value="${item.id}">
-        <button type="submit" class="add">+</button>
+        <button type="submit" class="add-btn">+</button>
       </form>
     </div>
   </div>
 
   <p class="empty" th:if="${#lists.isEmpty(items)}">Không có món nào phù hợp.</p>
-</div>
 
-<div class="cart-bar" th:if="${cartCount > 0}">
-  <a class="cart-bar-link" th:href="@{/t/{id}/cart(id=${table.id})}">
-    <span class="badge" th:text="${cartCount}">0</span>
-    <span>Xem giỏ</span>
-    <b th:text="${#numbers.formatInteger(cartTotal, 0, 'POINT')} + 'đ'">0đ</b>
-  </a>
+  <div th:replace="~{guest/tabbar :: tabbar('menu', ${table.id}, ${cartCount})}"></div>
 </div>
 </body>
 </html>

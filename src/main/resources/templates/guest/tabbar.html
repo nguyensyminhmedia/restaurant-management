@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="tabbar(active, tableId, cartCount)">
+  <div class="tab-spacer"></div>
+  <div class="tab-bar">
+    <div class="tab-bar-inner">
+      <a class="tab-item" th:classappend="${active == 'menu'} ? 'active'"
+         th:href="@{/t/{id}(id=${tableId})}">
+        <span class="tab-icon">&#9776;</span>
+        <span>Thuc don</span>
+      </a>
+      <a class="tab-item" th:classappend="${active == 'cart'} ? 'active'"
+         th:href="@{/t/{id}/cart(id=${tableId})}">
+        <span class="tab-icon">&#128722;</span>
+        <span>Gio hang</span>
+        <span class="tab-badge" th:if="${cartCount != null and cartCount > 0}" th:text="${cartCount}"></span>
+      </a>
+      <a class="tab-item" th:classappend="${active == 'orders'} ? 'active'"
+         th:href="@{/t/{id}/orders(id=${tableId})}">
+        <span class="tab-icon">&#128203;</span>
+        <span>Don cua toi</span>
+      </a>
+      <a class="tab-item" th:classappend="${active == 'service'} ? 'active'"
+         th:href="@{/t/{id}/service(id=${tableId})}">
+        <span class="tab-icon">&#128276;</span>
+        <span>Goi phuc vu</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+</html>

@@ -2,10 +2,14 @@ package com.restaurant.restaurant_app.controller;
 
 import com.restaurant.restaurant_app.dto.CartLine;
 import com.restaurant.restaurant_app.entity.Order;
+import com.restaurant.restaurant_app.entity.OrderStatus;
 import com.restaurant.restaurant_app.entity.RestaurantTable;
+import com.restaurant.restaurant_app.entity.ServiceRequest;
 import com.restaurant.restaurant_app.repository.CategoryRepository;
 import com.restaurant.restaurant_app.repository.MenuItemRepository;
+import com.restaurant.restaurant_app.repository.OrderRepository;
 import com.restaurant.restaurant_app.repository.RestaurantTableRepository;
+import com.restaurant.restaurant_app.repository.ServiceRequestRepository;
 import com.restaurant.restaurant_app.service.CartService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -27,6 +32,14 @@ public class GuestMenuController {
     private final CategoryRepository categoryRepository;
     private final MenuItemRepository menuItemRepository;
     private final CartService cartService;
+    private final OrderRepository orderRepository;
+    private final ServiceRequestRepository serviceRequestRepository;
+
+    @GetMapping("/welcome")
+    public String welcome(@PathVariable Long tableId, Model model) {
+        model.addAttribute("table", findTable(tableId));
+        return "guest/welcome";
+    }
 
     @GetMapping
     public String menu(@PathVariable Long tableId,
@@ -92,6 +105,38 @@ public class GuestMenuController {
             return "guest/cart";
         }
         return "redirect:/t/" + tableId + "?sent=" + order.getId();
+    }
+
+    @GetMapping("/orders")
+    public String myOrders(@PathVariable Long tableId, HttpSession session, Model model) {
+        RestaurantTable table = findTable(tableId);
+        model.addAttribute("table", table);
+        List<Order> orders = orderRepository.findByTableAndStatusNotOrderByCreatedAtAsc(
+                table, OrderStatus.PAID);
+        model.addAttribute("orders", orders);
+        addCart(model, session);
+        return "guest/my-orders";
+    }
+
+    @GetMapping("/service")
+    public String servicePage(@PathVariable Long tableId, HttpSession session, Model model) {
+        model.addAttribute("table", findTable(tableId));
+        addCart(model, session);
+        return "guest/service";
+    }
+
+    @PostMapping("/service")
+    public String sendServiceRequest(@PathVariable Long tableId,
+                                     @RequestParam String message,
+                                     RedirectAttributes redirect) {
+        RestaurantTable table = findTable(tableId);
+        if (message == null || message.isBlank()) {
+            redirect.addFlashAttribute("error", "Vui lòng nhập nội dung yêu cầu.");
+            return "redirect:/t/" + tableId + "/service";
+        }
+        serviceRequestRepository.save(new ServiceRequest(table, message.trim()));
+        redirect.addFlashAttribute("success", "Đã gửi yêu cầu! Nhân viên sẽ đến ngay.");
+        return "redirect:/t/" + tableId + "/service";
     }
 
     private void addCart(Model model, HttpSession session) {

@@ -1,61 +1,80 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Quản lý bàn</title>
-    <link rel="stylesheet" th:href="@{/css/admin.css}">
+  <meta charset="UTF-8">
+  <title>Quản lý bàn</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
-<div class="topbar">
-    <b>Quản lý nhà hàng</b>
-    <span>
-        <a th:href="@{/manager/menu-items}">Món ăn</a>
-        <a th:href="@{/manager/categories}">Danh mục</a>
-        <a th:href="@{/manager/tables}">Bàn</a>
-        <a th:href="@{/}">Trang chủ</a>
-    </span>
-</div>
-<div class="container">
-    <div class="card">
-        <h2>Quản lý bàn</h2>
-        <p class="msg" th:if="${message}" th:text="${message}"></p>
-        <p class="error" th:if="${error}" th:text="${error}"></p>
+<div class="layout">
+  <div th:replace="~{fragments/layout :: sidebar('tables')}"></div>
 
-        <form class="add-form" method="post" th:action="@{/manager/tables/add}">
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>Quản lý bàn</h1>
+        <div class="sub">Sơ đồ và trạng thái các bàn trong nhà hàng</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <a class="btn" th:href="@{/manager/qr}">In mã QR</a>
+    </div>
+
+    <div class="content">
+      <div th:if="${message}" class="msg" th:text="${message}"></div>
+      <div th:if="${error}" class="error" th:text="${error}"></div>
+
+      <div class="card" style="max-width:480px;margin-bottom:24px">
+        <h2>Thêm bàn mới</h2>
+        <form method="post" th:action="@{/manager/tables/add}" style="margin-top:14px">
+          <div class="row-form">
             <input type="text" name="name" placeholder="Tên bàn (ví dụ: Bàn 5)" required>
             <input type="number" name="seats" placeholder="Số chỗ" min="1" required>
+            <input type="text" name="location" placeholder="Vị trí (Tầng 1, Sân thượng...)">
             <button type="submit" class="btn">+ Thêm</button>
+          </div>
         </form>
+      </div>
 
+      <div class="card">
+        <div class="card-head">
+          <div><h2>Danh sách bàn</h2><p class="card-sub" th:text="${#lists.size(tables)} + ' bàn'"></p></div>
+        </div>
         <table>
-            <tr>
-                <th>ID</th><th>Tên bàn và số chỗ</th><th>Trạng thái</th>
-                <th>Trang khách</th><th>Xóa</th>
-            </tr>
-            <tr th:each="t : ${tables}">
-                <td th:text="${t.id}"></td>
-                <td>
-                    <form class="row-form" method="post"
-                          th:action="@{/manager/tables/{id}/update(id=${t.id})}">
-                        <input type="text" name="name" th:value="${t.name}" required>
-                        <input type="number" name="seats" th:value="${t.seats}" min="1" required>
-                        <button type="submit" class="btn small gray">Lưu</button>
-                    </form>
-                </td>
-                <td th:text="${t.status}"></td>
-                <td>
-                    <a class="btn small" th:href="@{/t/{id}(id=${t.id})}" target="_blank">Mở</a>
-                </td>
-                <td>
-                    <form class="inline" method="post"
-                          th:action="@{/manager/tables/{id}/delete(id=${t.id})}"
-                          onsubmit="return confirm('Xóa bàn này?')">
-                        <button type="submit" class="btn small danger">Xóa</button>
-                    </form>
-                </td>
-            </tr>
+          <tr>
+            <th>ID</th><th>Tên bàn</th><th>Số chỗ</th><th>Vị trí</th><th>Trạng thái</th><th>Trang khách</th><th>Thao tác</th>
+          </tr>
+          <tr th:each="t : ${tables}">
+            <td th:text="${t.id}"></td>
+            <td>
+              <form class="row-form" method="post" th:action="@{/manager/tables/{id}/update(id=${t.id})}">
+                <input type="text" name="name" th:value="${t.name}" required style="max-width:120px">
+            </td>
+            <td>
+                <input type="number" name="seats" th:value="${t.seats}" min="1" required style="max-width:70px">
+            </td>
+            <td>
+                <input type="text" name="location" th:value="${t.location}" placeholder="—" style="max-width:130px">
+                <button type="submit" class="btn small gray" style="margin-left:6px">Lưu</button>
+              </form>
+            </td>
+            <td>
+              <span class="pill" th:classappend="${t.status.name() == 'OCCUPIED'} ? 'cooking' : 'paid'"
+                    th:text="${t.status.name() == 'OCCUPIED'} ? 'Có khách' : 'Trống'"></span>
+            </td>
+            <td>
+              <a class="btn small ghost" th:href="@{/t/{id}(id=${t.id})}" target="_blank">Mở QR</a>
+            </td>
+            <td>
+              <form class="inline" method="post" th:action="@{/manager/tables/{id}/delete(id=${t.id})}"
+                    onsubmit="return confirm('Xóa bàn này?')">
+                <button type="submit" class="btn small danger">Xóa</button>
+              </form>
+            </td>
+          </tr>
         </table>
+      </div>
     </div>
+  </div>
 </div>
 </body>
 </html>

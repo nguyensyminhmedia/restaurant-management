@@ -1,52 +1,59 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Quản lý danh mục</title>
-    <link rel="stylesheet" th:href="@{/css/admin.css}">
+  <meta charset="UTF-8">
+  <title>Quản lý danh mục</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
-<div class="topbar">
-    <b>Quản lý nhà hàng</b>
-    <span>
-        <a th:href="@{/manager/menu-items}">Món ăn</a>
-        <a th:href="@{/manager/categories}">Danh mục</a>
-        <a th:href="@{/manager/tables}">Bàn</a>
-        <a th:href="@{/}">Trang chủ</a>
-    </span>
-</div>
-<div class="container">
-    <div class="card">
-        <h2>Quản lý danh mục</h2>
-        <p class="msg" th:if="${message}" th:text="${message}"></p>
-        <p class="error" th:if="${error}" th:text="${error}"></p>
+<div class="layout">
+  <div th:replace="~{fragments/layout :: sidebar('menu')}"></div>
 
-        <form class="add-form" method="post" th:action="@{/manager/categories/add}">
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>Quản lý thực đơn</h1>
+        <div class="sub">Danh mục món ăn</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <a class="link" th:href="@{/manager/menu-items}">← Về danh sách món</a>
+    </div>
+
+    <div class="content">
+      <div th:if="${message}" class="msg" th:text="${message}"></div>
+      <div th:if="${error}" class="error" th:text="${error}"></div>
+
+      <div class="card" style="max-width:760px">
+        <h2>Danh mục</h2>
+        <p class="card-sub" th:text="${#lists.size(categories)} + ' danh mục'"></p>
+
+        <form method="post" th:action="@{/manager/categories/add}" style="margin:16px 0">
+          <div class="row-form">
             <input type="text" name="name" placeholder="Tên danh mục mới" required>
             <button type="submit" class="btn">+ Thêm</button>
+          </div>
         </form>
 
         <table>
-            <tr><th>ID</th><th>Tên danh mục</th><th>Xóa</th></tr>
-            <tr th:each="c : ${categories}">
-                <td th:text="${c.id}"></td>
-                <td>
-                    <form class="row-form" method="post"
-                          th:action="@{/manager/categories/{id}/update(id=${c.id})}">
-                        <input type="text" name="name" th:value="${c.name}" required>
-                        <button type="submit" class="btn small gray">Lưu</button>
-                    </form>
-                </td>
-                <td>
-                    <form class="inline" method="post"
-                          th:action="@{/manager/categories/{id}/delete(id=${c.id})}"
-                          onsubmit="return confirm('Xóa danh mục này?')">
-                        <button type="submit" class="btn small danger">Xóa</button>
-                    </form>
-                </td>
-            </tr>
+          <tr><th>Tên danh mục</th><th>Thao tác</th></tr>
+          <tr th:each="c : ${categories}">
+            <td>
+              <form class="row-form" method="post" th:action="@{/manager/categories/{id}/update(id=${c.id})}">
+                <input type="text" name="name" th:value="${c.name}" required>
+                <button type="submit" class="btn small gray">Lưu</button>
+              </form>
+            </td>
+            <td>
+              <form class="inline" method="post" th:action="@{/manager/categories/{id}/delete(id=${c.id})}"
+                    onsubmit="return confirm('Xóa danh mục này?')">
+                <button type="submit" class="btn small danger">Xóa</button>
+              </form>
+            </td>
+          </tr>
         </table>
+      </div>
     </div>
+  </div>
 </div>
 </body>
 </html>
