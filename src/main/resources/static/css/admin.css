@@ -50,3 +50,39 @@ input[type=text], input[type=number], select {
     width: auto; display: inline-block; padding: 5px;
 }
 .row-form input[type=number] { width: 80px; }
+
+.order-grid {
+    display: grid; gap: 16px; margin-top: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+.order-card { padding: 16px 18px; }
+.order-head { display: flex; justify-content: space-between; align-items: center; }
+.order-head b { font-size: 17px; color: #8b3a1e; }
+.pill {
+    padding: 3px 10px; border-radius: 10px; background: #f0e4dc;
+    color: #8b3a1e; font-size: 12px; font-weight: bold;
+}
+.order-time { color: #999; font-size: 13px; margin-top: 2px; }
+.note { color: #b35c11; font-size: 13px; font-style: italic; margin: 8px 0 0; }
+.order-items { margin: 10px 0; }
+.order-items form { display: block; }
+.item-line {
+    width: 100%; display: flex; align-items: center; gap: 8px;
+    padding: 7px 8px; margin-bottom: 4px; border: 1px solid #eee;
+    border-radius: 6px; background: #fff; font-size: 14px;
+    text-align: left; cursor: pointer;
+}
+.item-line:hover { background: #faf5f0; }
+.item-line .tick { color: #bbb; font-size: 15px; }
+.item-line b { margin-left: auto; }
+.item-line.done { background: #eef7ef; border-color: #cfe6d2; color: #7a8a7c; }
+.item-line.done b, .item-line.done .tick { color: #27ae60; }
+.item-line.done span:nth-child(2) { text-decoration: line-through; }
+.order-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+
+.money { color: #8b3a1e; font-weight: bold; }
+.total-line {
+    display: flex; justify-content: space-between; padding: 12px 0 0;
+    margin-top: 12px; border-top: 2px solid #eee; font-size: 16px;
+}
+

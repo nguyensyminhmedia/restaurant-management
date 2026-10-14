@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Màn hình bếp</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div class="topbar">
+    <b>Màn hình bếp</b>
+    <span>
+        <a th:href="@{/kitchen}">Đơn đang làm</a>
+        <a th:href="@{/}">Trang chủ</a>
+    </span>
+</div>
+<div class="container">
+    <p class="msg" th:if="${message}" th:text="${message}"></p>
+
+    <p th:if="${orders.isEmpty()}" class="card">Hiện không có đơn nào cần làm.</p>
+
+    <div class="order-grid">
+        <div class="card order-card" th:each="o : ${orders}">
+            <div class="order-head">
+                <b th:text="${o.table.name}">Bàn</b>
+                <span class="pill" th:text="${o.status}">PENDING</span>
+            </div>
+            <div class="order-time" th:text="${#temporals.format(o.createdAt, 'HH:mm dd/MM')}">giờ</div>
+            <p class="note" th:if="${o.note}" th:text="'Ghi chú: ' + ${o.note}"></p>
+
+            <div class="order-items">
+                <form th:each="i : ${o.items}" class="inline"
+                      method="post"
+                      th:action="@{/kitchen/orders/{oid}/items/{iid}/toggle(oid=${o.id}, iid=${i.id})}">
+                    <button type="submit" class="item-line" th:classappend="${i.done} ? 'done'">
+                        <span class="tick" th:text="${i.done} ? '✓' : '○'"></span>
+                        <span th:text="${i.menuItem.name}">Món</span>
+                        <b th:text="'×' + ${i.quantity}">×1</b>
+                    </button>
+                </form>
+            </div>
+
+            <div class="order-actions">
+                <form class="inline" method="post"
+                      th:action="@{/kitchen/orders/{id}/status(id=${o.id})}">
+                    <input type="hidden" name="status" value="COOKING">
+                    <button type="submit" class="btn small">Bắt đầu làm</button>
+                </form>
+                <form class="inline" method="post"
+                      th:action="@{/kitchen/orders/{id}/status(id=${o.id})}">
+                    <input type="hidden" name="status" value="READY">
+                    <button type="submit" class="btn small gray">Xong hết</button>
+                </form>
+                <form class="inline" method="post"
+                      th:action="@{/kitchen/orders/{id}/status(id=${o.id})}">
+                    <input type="hidden" name="status" value="SERVED">
+                    <button type="submit" class="btn small gray">Đã phục vụ</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thu ngân</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div class="topbar">
+    <b>Thu ngân</b>
+    <span>
+        <a th:href="@{/cashier}">Đơn chờ thanh toán</a>
+        <a th:href="@{/}">Trang chủ</a>
+    </span>
+</div>
+<div class="container">
+    <p class="msg" th:if="${message}" th:text="${message}"></p>
+
+    <div class="card">
+        <h2>Đơn chờ thanh toán</h2>
+        <table>
+            <tr>
+                <th>Đơn</th><th>Bàn</th><th>Món</th><th>Trạng thái</th>
+                <th>Tổng tiền</th><th>Thao tác</th>
+            </tr>
+            <tr th:each="o : ${orders}">
+                <td th:text="'#' + ${o.id}"></td>
+                <td th:text="${o.table.name}"></td>
+                <td>
+                    <div th:each="i : ${o.items}">
+                        <span th:text="${i.menuItem.name} + ' ×' + ${i.quantity}"></span>
+                    </div>
+                </td>
+                <td th:text="${o.status}"></td>
+                <td class="money" th:text="${#numbers.formatInteger(o.total, 0, 'POINT')} + 'đ'">0đ</td>
+                <td>
+                    <a class="btn small gray" th:href="@{/cashier/orders/{id}(id=${o.id})}">Chi tiết</a>
+                    <form class="inline" method="post"
+                          th:action="@{/cashier/orders/{id}/pay(id=${o.id})}"
+                          onsubmit="return confirm('Xác nhận đã thu tiền?')">
+                        <button type="submit" class="btn small">Thanh toán</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${orders.isEmpty()}">
+                <td colspan="6">Chưa có đơn nào chờ thanh toán.</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+        <h2>Tình trạng bàn</h2>
+        <table>
+            <tr><th>Bàn</th><th>Số chỗ</th><th>Trạng thái</th></tr>
+            <tr th:each="t : ${tables}">
+                <td th:text="${t.name}"></td>
+                <td th:text="${t.seats}"></td>
+                <td th:text="${t.status}"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

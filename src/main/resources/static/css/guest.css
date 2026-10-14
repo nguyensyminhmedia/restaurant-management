@@ -26,4 +26,58 @@ body { font-family: Arial, sans-serif; background: #f4efe9; margin: 0; }
 .item .name { font-weight: bold; }
 .item .cat { color: #888; font-size: 13px; }
 .item .price { color: #8b3a1e; font-weight: bold; }
+.item-right { text-align: right; }
+.item .add {
+    margin-top: 6px; width: 32px; height: 32px; border: none; border-radius: 50%;
+    background: #8b3a1e; color: #fff; font-size: 18px; line-height: 1; cursor: pointer;
+}
 .empty { text-align: center; color: #888; margin: 32px 16px; }
+
+.cart-bar {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    display: flex; justify-content: center; padding: 10px 16px;
+    background: #fff; box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.12);
+}
+.cart-bar-link {
+    display: flex; align-items: center; gap: 10px; width: 100%; max-width: 448px;
+    padding: 11px 16px; border-radius: 8px; background: #8b3a1e; color: #fff;
+    text-decoration: none; font-size: 15px;
+}
+.cart-bar-link b { margin-left: auto; }
+.badge {
+    min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px;
+    background: #fff; color: #8b3a1e; font-size: 13px; font-weight: bold;
+    display: inline-flex; align-items: center; justify-content: center;
+}
+
+.back { display: block; padding: 12px 16px 0; color: #8b3a1e; text-decoration: none; }
+.qty { display: flex; align-items: center; gap: 4px; }
+.qty span { min-width: 22px; text-align: center; font-weight: bold; }
+.qty form { display: inline; }
+.qty-btn {
+    width: 28px; height: 28px; border: 1px solid #8b3a1e; border-radius: 6px;
+    background: #fff; color: #8b3a1e; font-size: 16px; line-height: 1; cursor: pointer;
+}
+.qty-btn.trash { border-color: #c0392b; color: #c0392b; }
+.cart-footer {
+    background: #fff; margin: 16px 16px 24px; padding: 14px; border-radius: 10px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+}
+.cart-footer .total { margin-bottom: 10px; font-size: 15px; }
+.cart-footer .total b { color: #8b3a1e; }
+.cart-footer textarea {
+    width: 100%; box-sizing: border-box; padding: 9px; margin-bottom: 10px;
+    border: 1px solid #ccc; border-radius: 6px; font-family: inherit; resize: vertical;
+}
+.send {
+    width: 100%; padding: 12px; border: none; border-radius: 8px;
+    background: #8b3a1e; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer;
+}
+.error {
+    background: #fdecea; color: #c0392b; margin: 12px 16px 0;
+    padding: 10px 12px; border-radius: 6px; font-size: 14px;
+}
+.ok {
+    background: #e8f5e9; color: #2e7d32; margin: 12px 16px 0;
+    padding: 10px 12px; border-radius: 6px; font-size: 14px;
+}

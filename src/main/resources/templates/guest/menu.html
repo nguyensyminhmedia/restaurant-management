@@ -13,6 +13,8 @@
     <small th:text="${table.name} + ' · ' + ${table.seats} + ' chỗ'">Bàn</small>
   </div>
 
+  <p class="ok" th:if="${param.sent}" th:text="'Đã gửi món #' + ${param.sent} + ' xuống bếp. Chúc bạn dùng bữa ngon!'">Đã gửi bếp.</p>
+
   <form class="search" method="get" th:action="@{/t/{id}(id=${table.id})}">
     <input type="hidden" name="categoryId" th:if="${selectedCategoryId != null}"
            th:value="${selectedCategoryId}">
@@ -34,10 +36,24 @@
       <div class="name" th:text="${item.name}">Tên món</div>
       <div class="cat" th:text="${item.category.name}">Danh mục</div>
     </div>
-    <div class="price" th:text="${#numbers.formatInteger(item.price, 0, 'POINT')} + 'đ'">0đ</div>
+    <div class="item-right">
+      <div class="price" th:text="${#numbers.formatInteger(item.price, 0, 'POINT')} + 'đ'">0đ</div>
+      <form method="post" th:action="@{/t/{id}/cart/add(id=${table.id})}">
+        <input type="hidden" name="menuItemId" th:value="${item.id}">
+        <button type="submit" class="add">+</button>
+      </form>
+    </div>
   </div>
 
   <p class="empty" th:if="${#lists.isEmpty(items)}">Không có món nào phù hợp.</p>
+</div>
+
+<div class="cart-bar" th:if="${cartCount > 0}">
+  <a class="cart-bar-link" th:href="@{/t/{id}/cart(id=${table.id})}">
+    <span class="badge" th:text="${cartCount}">0</span>
+    <span>Xem giỏ</span>
+    <b th:text="${#numbers.formatInteger(cartTotal, 0, 'POINT')} + 'đ'">0đ</b>
+  </a>
 </div>
 </body>
 </html>

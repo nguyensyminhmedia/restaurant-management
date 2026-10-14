@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Giỏ hàng</title>
+  <link rel="stylesheet" th:href="@{/css/guest.css}">
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>Giỏ hàng</h1>
+    <small th:text="${table.name} + ' · ' + ${table.seats} + ' chỗ'">Bàn</small>
+  </div>
+
+  <a class="back" th:href="@{/t/{id}(id=${table.id})}">← Quay lại thực đơn</a>
+
+  <p class="error" th:if="${error}" th:text="${error}"></p>
+
+  <div class="item" th:each="line : ${cart}">
+    <div>
+      <div class="name" th:text="${line.name}">Tên món</div>
+      <div class="cat" th:text="${#numbers.formatInteger(line.price, 0, 'POINT')} + 'đ × ' + ${line.quantity}">0đ</div>
+    </div>
+    <div class="qty">
+      <form method="post" th:action="@{/t/{id}/cart/quantity(id=${table.id})}">
+        <input type="hidden" name="menuItemId" th:value="${line.menuItemId}">
+        <input type="hidden" name="delta" value="-1">
+        <button class="qty-btn">−</button>
+      </form>
+      <span th:text="${line.quantity}">1</span>
+      <form method="post" th:action="@{/t/{id}/cart/quantity(id=${table.id})}">
+        <input type="hidden" name="menuItemId" th:value="${line.menuItemId}">
+        <input type="hidden" name="delta" value="1">
+        <button class="qty-btn">+</button>
+      </form>
+      <form method="post" th:action="@{/t/{id}/cart/remove(id=${table.id})}">
+        <input type="hidden" name="menuItemId" th:value="${line.menuItemId}">
+        <button class="qty-btn trash" title="Xóa">×</button>
+      </form>
+    </div>
+  </div>
+
+  <p class="empty" th:if="${cart.isEmpty()}">Giỏ hàng đang trống.</p>
+
+  <div class="cart-footer" th:if="${!cart.isEmpty()}">
+    <div class="total">Tổng cộng: <b th:text="${#numbers.formatInteger(cartTotal, 0, 'POINT')} + 'đ'">0đ</b></div>
+    <form method="post" th:action="@{/t/{id}/cart/submit(id=${table.id})}">
+      <textarea name="note" placeholder="Ghi chú (không bắt buộc, ví dụ: ít cay, nhiều đá...)" rows="2"></textarea>
+      <button type="submit" class="send">Gửi bếp</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>

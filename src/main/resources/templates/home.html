@@ -14,6 +14,8 @@
   <a class="btn" th:if="${roleName == 'MANAGER'}" th:href="@{/manager/menu-items}">Quản lý món ăn</a>
   <a class="btn" th:if="${roleName == 'MANAGER'}" th:href="@{/manager/categories}">Quản lý danh mục</a>
   <a class="btn" th:if="${roleName == 'MANAGER'}" th:href="@{/manager/tables}">Quản lý bàn</a>
+  <a class="btn" th:if="${roleName == 'KITCHEN' or roleName == 'MANAGER'}" th:href="@{/kitchen}">Màn hình bếp</a>
+  <a class="btn" th:if="${roleName == 'CASHIER' or roleName == 'MANAGER'}" th:href="@{/cashier}">Thu ngân</a>
 
   <form th:action="@{/logout}" method="post">
     <button type="submit">Đăng xuất</button>

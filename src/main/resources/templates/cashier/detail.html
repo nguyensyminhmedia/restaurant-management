@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết đơn</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div class="topbar">
+    <b>Thu ngân</b>
+    <span>
+        <a th:href="@{/cashier}">Đơn chờ thanh toán</a>
+        <a th:href="@{/}">Trang chủ</a>
+    </span>
+</div>
+<div class="container">
+    <div class="card">
+        <h2 th:text="'Đơn #' + ${order.id} + ' — ' + ${order.table.name}">Đơn</h2>
+        <p>Thời gian:
+            <span th:text="${#temporals.format(order.createdAt, 'HH:mm dd/MM/yyyy')}"></span>
+            · Trạng thái: <b th:text="${order.status}"></b>
+        </p>
+        <p class="note" th:if="${order.note}" th:text="'Ghi chú: ' + ${order.note}"></p>
+
+        <table>
+            <tr><th>Món</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr>
+            <tr th:each="i : ${order.items}">
+                <td th:text="${i.menuItem.name}">Món</td>
+                <td th:text="${i.quantity}">1</td>
+                <td th:text="${#numbers.formatInteger(i.price, 0, 'POINT')} + 'đ'">0đ</td>
+                <td th:text="${#numbers.formatInteger(i.subtotal, 0, 'POINT')} + 'đ'">0đ</td>
+            </tr>
+        </table>
+
+        <div class="total-line">
+            <span>Tổng cộng</span>
+            <span class="money" th:text="${#numbers.formatInteger(order.total, 0, 'POINT')} + 'đ'">0đ</span>
+        </div>
+
+        <div class="actions">
+            <form method="post" th:action="@{/cashier/orders/{id}/pay(id=${order.id})}"
+                  onsubmit="return confirm('Xác nhận đã thu tiền?')">
+                <button type="submit" class="btn">Thanh toán</button>
+            </form>
+            <a class="btn gray" th:href="@{/cashier}">Quay lại</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
