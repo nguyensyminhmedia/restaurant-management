@@ -28,7 +28,10 @@
         </form>
 
         <table>
-            <tr><th>ID</th><th>Tên bàn và số chỗ</th><th>Trạng thái</th><th>Xóa</th></tr>
+            <tr>
+                <th>ID</th><th>Tên bàn và số chỗ</th><th>Trạng thái</th>
+                <th>Trang khách</th><th>Xóa</th>
+            </tr>
             <tr th:each="t : ${tables}">
                 <td th:text="${t.id}"></td>
                 <td>
@@ -40,6 +43,9 @@
                     </form>
                 </td>
                 <td th:text="${t.status}"></td>
+                <td>
+                    <a class="btn small" th:href="@{/t/{id}(id=${t.id})}" target="_blank">Mở</a>
+                </td>
                 <td>
                     <form class="inline" method="post"
                           th:action="@{/manager/tables/{id}/delete(id=${t.id})}"

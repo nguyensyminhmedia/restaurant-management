@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Thực đơn</title>
+  <link rel="stylesheet" th:href="@{/css/guest.css}">
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>Thực đơn</h1>
+    <small th:text="${table.name} + ' · ' + ${table.seats} + ' chỗ'">Bàn</small>
+  </div>
+
+  <form class="search" method="get" th:action="@{/t/{id}(id=${table.id})}">
+    <input type="hidden" name="categoryId" th:if="${selectedCategoryId != null}"
+           th:value="${selectedCategoryId}">
+    <input type="text" name="q" th:value="${q}" placeholder="Tìm món...">
+    <button type="submit">Tìm</button>
+  </form>
+
+  <div class="chips">
+    <a class="chip" th:classappend="${selectedCategoryId == null} ? 'active'"
+       th:href="@{/t/{id}(id=${table.id}, q=${q})}">Tất cả</a>
+    <a class="chip" th:each="c : ${categories}"
+       th:classappend="${selectedCategoryId != null and selectedCategoryId == c.id} ? 'active'"
+       th:href="@{/t/{id}(id=${table.id}, categoryId=${c.id}, q=${q})}"
+       th:text="${c.name}">Danh mục</a>
+  </div>
+
+  <div class="item" th:each="item : ${items}">
+    <div>
+      <div class="name" th:text="${item.name}">Tên món</div>
+      <div class="cat" th:text="${item.category.name}">Danh mục</div>
+    </div>
+    <div class="price" th:text="${#numbers.formatInteger(item.price, 0, 'POINT')} + 'đ'">0đ</div>
+  </div>
+
+  <p class="empty" th:if="${#lists.isEmpty(items)}">Không có món nào phù hợp.</p>
+</div>
+</body>
+</html>
